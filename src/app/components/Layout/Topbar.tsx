@@ -14,12 +14,12 @@ export default function Topbar() {
           <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             <li>
               <Link href="/" className="block py-2 px-3 text-white">
-                All
+                All dragons
               </Link>
             </li>
             <li>
               <Link href="/wallets" className="block py-2 px-3 text-white">
-                My Nft's
+                My Dragons
               </Link>
             </li>
           </ul>

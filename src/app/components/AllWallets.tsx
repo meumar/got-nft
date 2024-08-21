@@ -16,17 +16,10 @@ const AllWallets: NextPage = () => {
   const { publicKey }: any = useWallet();
 
   useEffect(() => {
-    fetchAllWallets();
-  }, [publicKey]);
+  }, []);
 
   const fetchAllWallets = async () => {
-    if (publicKey) {
-      setWalletLoading(true);
-      const res = await fetch(`/api/wallets/${publicKey.toBase58()}`);
-      const mappedAccounts = await res.json();
-      setWalletLoading(false);
-      setAllWallets(mappedAccounts);
-    }
+
   };
   return (
     <div>
