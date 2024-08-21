@@ -1,0 +1,36 @@
+{
+    "name": "SolanaArtProject #1",
+    "description": "Generative art on Solana.",
+    "image": "https://wallpapercave.com/wp/wp3746676.jpg",
+    "external_url": "https://wallpapercave.com",
+    "attributes": [
+      {
+        "trait_type": "size",
+        "value": "large"
+      },
+      {
+        "trait_type": "color",
+        "value": "black"
+      }
+    ],
+    "properties": {
+      "files": [
+        {
+          "uri": "https://wallpapercave.com/wp/wp3746676.jpg",
+          "type": "image/png"
+        }
+      ],
+      "category": "video",
+  
+      "collection": {
+        "name": "Solflare X NFT",
+        "family": "Solflare"
+      },
+      "creators": [
+        {
+          "address": "Bz1vujMhdzyTnhmjaRJRJ9L98KifHkUHZwd3fRTjEEcX",
+          "share": 100
+        }
+      ]
+    }
+  }
