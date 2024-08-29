@@ -1,5 +1,10 @@
-import { PublicKey, clusterApiUrl, Connection } from "@solana/web3.js";
+import { PublicKey, clusterApiUrl, Connection, GetProgramAccountsFilter } from "@solana/web3.js";
 import * as borsh from "@coral-xyz/borsh";
+
+import { download, upload } from "thirdweb/storage";
+import { createThirdwebClient } from "thirdweb";
+import { THIRD_WEB_CLIENT } from "./../constants";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
@@ -18,40 +23,25 @@ export const newPublicKey = (address: string) => {
 };
 
 export const accountDetails = borsh.struct([
-  borsh.bool("is_transaction"),
-  borsh.publicKey("created_by"),
-  borsh.u64("threshold"),
-  borsh.str("name"),
-  borsh.publicKey("user1"),
-  borsh.publicKey("user2"),
-  borsh.publicKey("user3"),
-  borsh.publicKey("user4"),
-  borsh.publicKey("user5"),
+  borsh.publicKey("owner_account"),
+  borsh.publicKey("token_account"),
+  borsh.u64("price"),
+  borsh.u64("timestamp"),
 ]);
 
-export const walletAccoutDesiriazation = (account: any) => {
+export const sellAccoutDesiriazation = (account: any) => {
   const offset = 8;
   const {
-    is_transaction,
-    name,
-    created_by,
-    threshold,
-    user1,
-    user2,
-    user3,
-    user4,
-    user5,
+    owner_account,
+    token_account,
+    price,
+    timestamp
   } = accountDetails.decode(account.data.slice(offset, account.data.length));
   return {
-    is_transaction: is_transaction,
-    created_by: created_by.toBase58(),
-    threshold: threshold.toNumber(),
-    name,
-    user1: user1.toBase58(),
-    user2: user2.toBase58(),
-    user3: user3.toBase58(),
-    user4: user4.toBase58(),
-    user5: user5.toBase58(),
+    price: price.toNumber(),
+    timestamp: new Date(timestamp.toNumber() * 1000).toLocaleString(),
+    owner_account: owner_account.toBase58(),
+    token_account: token_account.toBase58(),
   };
 };
 
@@ -142,7 +132,7 @@ export const getInboundTransactions = async (address: string) => {
   for (let signatureInfo of signatures) {
     const transaction: any = await connection.getConfirmedTransaction(
       signatureInfo.signature
-    );  
+    );
     if (transaction && transaction.meta && transaction.meta.postBalances && transaction.transaction) {
       const accountKeys = transaction.transaction._message.accountKeys;
       const postBalances = transaction.meta.postBalances;
@@ -165,4 +155,117 @@ export const getInboundTransactions = async (address: string) => {
     }
   }
   return inboundTransactions;
+}
+
+const client = createThirdwebClient({
+  clientId: THIRD_WEB_CLIENT,
+});
+
+export const uploadFile = async (name: string, description: string, attributes: any, file: Buffer) => {
+  try {
+    const imageURL = await upload({
+      client,
+      files: [file],
+    });
+    let tokenHttpURL: any = await downloadFile(imageURL);
+    console.log("tokenHttpURL", tokenHttpURL);
+    console.log("imageURL", imageURL);
+    const metaData = {
+      name: name,
+      description: description,
+      image: imageURL,
+      animation_url: tokenHttpURL,
+      attributes: attributes,
+    };
+    const metaDataURL = await upload({
+      client,
+      files: [
+        new File([JSON.stringify(metaData, null, 2)], "metaData.json", {
+          type: "application/json",
+        }),
+      ],
+    });
+    return metaDataURL;
+  } catch (err) {
+    return err;
+  }
+};
+export const downloadFile = async (uri: string) => {
+  try {
+    const downloadURL = await download({
+      client,
+      uri,
+    });
+    return downloadURL.url;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const prepareDragons = async (dragons = []) => {
+  let result: any[] = [];
+  await Promise.all(dragons.map(async (dragon: any) => {
+    try {
+      if (dragon.metadata.uri && dragon.metadata.uri.startsWith("ip")) {
+        let tokenHttpURL: any = await downloadFile(dragon.metadata.uri);
+        const response = await fetch(tokenHttpURL);
+        const metaData = await response.json();
+        if (metaData?.animation_url.startsWith("https:/")) {
+          result.push({
+            address: dragon.publicKey,
+            name: dragon.metadata.name,
+            symbol: dragon.metadata.symbol,
+            description: metaData.description,
+            attributes: metaData.attributes,
+            url: metaData.animation_url
+          });
+        }
+      }
+    } catch (e) {
+
+    }
+  }));
+  return result
+}
+
+export const assignOwnership = (dragons: any[] = [], sells: any = []) => {
+  return dragons.map(dragon => {
+    let sell = sells.find((s: any) => s.token_account == dragon.address);
+    if (sell) {
+      dragon.owner = sell.owner_account;
+      dragon.price = sell.price;
+      dragon.date = sell.timestamp;
+      dragon.sell = true;
+      dragon.sell_address = sell.address;
+    }
+    return dragon
+  })
+}
+
+
+export const getTokenAccounts = async (wallet: string, solanaConnection: Connection) => {
+  const filters: GetProgramAccountsFilter[] = [
+    {
+      dataSize: 165,
+    },
+    {
+      memcmp: {
+        offset: 32,
+        bytes: wallet,
+      },
+    }];
+  const accounts = await solanaConnection.getParsedProgramAccounts(
+    TOKEN_PROGRAM_ID,
+    { filters: filters }
+  );
+  let result: any = [];
+  accounts.forEach((account, i) => {
+    const parsedAccountInfo: any = account.account.data;
+    const mintAddress: string = parsedAccountInfo["parsed"]["info"]["mint"];
+    const tokenBalance: number = parsedAccountInfo["parsed"]["info"]["tokenAmount"]["uiAmount"];
+    if (tokenBalance > 0) {
+      result.push(mintAddress);
+    }
+  });
+  return result
 }

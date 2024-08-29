@@ -1,30 +1,31 @@
 {
-    "name": "SolanaArtProject #1",
-    "description": "Generative art on Solana.",
-    "image": "https://wallpapercave.com/wp/wp3746676.jpg",
-    "external_url": "https://wallpapercave.com",
+    "name": "Got Nft",
+    "description": "Generative arts of Got universe dragons",
+    "image": "https://raw.githubusercontent.com/meumar/my-files/main/meleys.jpeg",
+    "external_url": "https://got-dy4dqk25o-umar-sheiks-projects.vercel.app/",
+    "animation_url": "https://raw.githubusercontent.com/meumar/my-files/main/meleys.jpeg",
     "attributes": [
       {
         "trait_type": "size",
-        "value": "large"
+        "value": "medium"
       },
       {
         "trait_type": "color",
-        "value": "black"
+        "value": "red"
       }
     ],
     "properties": {
       "files": [
         {
-          "uri": "https://wallpapercave.com/wp/wp3746676.jpg",
-          "type": "image/png"
+          "uri": "https://raw.githubusercontent.com/meumar/my-files/main/meleys.jpeg",
+          "type": "image/jpeg"
         }
       ],
-      "category": "video",
+      "category": "image",
   
       "collection": {
-        "name": "Solflare X NFT",
-        "family": "Solflare"
+        "name": "Got NFT",
+        "family": "Got"
       },
       "creators": [
         {
