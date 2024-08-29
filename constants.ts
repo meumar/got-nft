@@ -3,5 +3,5 @@ export const PROGRAM_ID = "8T2AWc9GbwRMduh8Ev6oJUZqHrsQnM4eDSvqcV8fDQnS";
 export const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID =
   "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
 
-export const THIRD_WEB_CLIENT = "27da3d805bc38664f67d95e69c09d5e5";
-export const THIRD_WEB_SECRET = "1y1MdBeGEdBJSTFmN9Pa3RTy2pS7tuWD6TqR0v_VlBFqoPDGUhirK-7K1Nx7WkbFDcqn204wWWTz4EQ0nrT6kA";
+export const THIRD_WEB_CLIENT = "**********";
+export const THIRD_WEB_SECRET = "*****************";
